@@ -6,8 +6,8 @@ module RSpec
         class NullConverter; def convert(code, pre); code; end; end #:nodoc:
         begin; require 'syntax/convertors/html'; @@converter = Syntax::Convertors::HTML.for_syntax "ruby"; rescue LoadError => e; @@converter = NullConverter.new; end
 
-        def snippet(error)
-          raw_code, line = snippet_for(error.backtrace[0])
+        def snippet(backtrace)
+          raw_code, line = snippet_for(backtrace[0])
           highlighted = @@converter.convert(raw_code, false)
           highlighted << "\n<span class=\"comment\"># gem install syntax to get syntax highlighting</span>" if @@converter.is_a?(NullConverter)
           post_process(highlighted, line)
