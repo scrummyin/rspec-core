@@ -144,16 +144,16 @@ module RSpec::Core
         @task = RakeTask.new do |t|
           t.pattern = File.join(@tmp_dir, "*spec.rb")
         end
-        ["first_spec.rb", "second_\"spec.rb", "third_'spec.rb"].each do |file_name|
+        ["first_spec.rb", "second_\"spec.rb", "third_\'spec.rb"].each do |file_name|
           FileUtils.touch(File.join(@tmp_dir, file_name))
         end
       end
 
       it "escapes the quotes" do
-        @task.__send__(:files_to_run).should eq([
+        @task.__send__(:files_to_run).sort.should eq([
           File.join(@tmp_dir, "first_spec.rb"),
           File.join(@tmp_dir, "second_\\\"spec.rb"),
-          File.join(@tmp_dir, "third_\\'spec.rb") 
+          File.join(@tmp_dir, "third_\\\'spec.rb") 
         ])
       end
     end

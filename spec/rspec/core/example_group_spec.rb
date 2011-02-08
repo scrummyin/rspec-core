@@ -228,6 +228,21 @@ module RSpec::Core
 
     end
 
+    [:focus, :focused].each do |example_alias|
+      describe "##{example_alias}" do
+        let(:group) { ExampleGroup.describe }
+        subject { group.send example_alias, "a focused example" }
+
+        it 'defines an example that can be filtered with :focused => true' do
+          subject.metadata.should include(:focused => true)
+        end
+
+        it 'defines an example that can be filtered with :focus => true' do
+          subject.metadata.should include(:focus => true)
+        end
+      end
+    end
+
     describe "#before, after, and around hooks" do
 
       it "runs the before alls in order" do
@@ -620,70 +635,6 @@ module RSpec::Core
       end
     end
 
-    describe "#its" do
-      context "with nil value" do
-        subject do
-          Class.new do
-            def nil_value
-              nil
-            end
-          end.new
-        end
-        its(:nil_value) { should be_nil }
-      end
-
-      context "with nested attributes" do
-        subject do
-          Class.new do
-            def name
-              "John"
-            end
-          end.new
-        end
-        its("name.size") { should == 4 }
-        its("name.size.class") { should == Fixnum }
-      end
-
-      context "when it is a Hash" do
-        subject do
-          { :attribute => 'value',
-            'another_attribute' => 'another_value' }
-        end
-        its([:attribute]) { should == 'value' }
-        its([:attribute]) { should_not == 'another_value' }
-        its([:another_attribute]) { should == 'another_value' }
-        its([:another_attribute]) { should_not == 'value' }
-        its(:keys) { should =~ ['another_attribute', :attribute] }
-        context "when referring to an attribute without the proper array syntax" do
-          context "it raises an error" do
-            its(:attribute) do
-              expect do
-                should eq('value')
-              end.to raise_error(NoMethodError)
-            end
-          end
-        end
-      end
-
-      context "calling and overriding super" do
-        it "calls to the subject defined in the parent group" do
-          group = ExampleGroup.describe(Array) do
-            subject { [1, 'a'] }
-
-            its(:last) { should == 'a' }
-
-            describe '.first' do
-              def subject; super().first; end
-
-              its(:next) { should == 2 }
-            end
-          end
-
-          group.run.should be_true
-        end
-      end
-
-    end
 
     describe "#top_level_description" do
       it "returns the description from the outermost example group" do

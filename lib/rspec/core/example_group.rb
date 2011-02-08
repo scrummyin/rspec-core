@@ -58,7 +58,8 @@ module RSpec
 
       alias_example_to :it
       alias_example_to :specify
-      alias_example_to :focused, :focused => true
+      alias_example_to :focused, :focused => true, :focus => true
+      alias_example_to :focus,   :focused => true, :focus => true
       alias_example_to :pending, :pending => true
       alias_example_to :xit,     :pending => true
 
@@ -172,14 +173,14 @@ module RSpec
       def self.eval_before_alls(example_group_instance)
         return if descendant_filtered_examples.empty?
         assign_before_all_ivars(superclass.before_all_ivars, example_group_instance)
-        world.run_hook_filtered(:before, :all, self, example_group_instance) if top_level?
+        world.run_hook_filtered(:before, :all, self, example_group_instance)
         run_hook!(:before, :all, example_group_instance)
         store_before_all_ivars(example_group_instance)
       end
 
       def self.eval_around_eachs(example, initial_procsy)
         example.around_hooks.reverse.inject(initial_procsy) do |procsy, around_hook|
-          Example::Procsy.new(procsy.metadata) do
+          Example.procsy(procsy.metadata) do
             example.example_group_instance.instance_eval_with_args(procsy, &around_hook)
           end
         end
@@ -212,7 +213,7 @@ An error occurred in an after(:all) hook.
         EOS
         end
 
-        world.run_hook_filtered(:after, :all, self, example_group_instance) if top_level?
+        world.run_hook_filtered(:after, :all, self, example_group_instance)
       end
 
       def self.around_hooks_for(example)

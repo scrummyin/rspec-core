@@ -1,19 +1,20 @@
 require 'autotest'
+require 'rspec/core/deprecation'
 
 class RSpecCommandError < StandardError; end
 
 class Autotest::Rspec2 < Autotest
 
-  SPEC_PROGRAM = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'bin', 'rspec'))
+  SPEC_PROGRAM = File.expand_path('../../../bin/rspec', __FILE__)
 
   def initialize
-    super
+    super()
     clear_mappings
     setup_rspec_project_mappings
 
     # Example for Ruby 1.8: http://rubular.com/r/AOXNVDrZpx
     # Example for Ruby 1.9: http://rubular.com/r/85ag5AZ2jP
-    self.failed_results_re = /^\s*\d+\).*\n\s+Failure.*(\n\s+#\s(.*)?:\d+(?::.*)?)+$/m
+    self.failed_results_re = /^\s*\d+\).*\n\s+(?:\e\[\d*m)?Failure.*(\n(?:\e\[\d*m)?\s+#\s(.*)?:\d+(?::.*)?(?:\e\[\d*m)?)+$/m
     self.completed_re = /\n(?:\e\[\d*m)?\d* examples?/m
   end
 
@@ -41,15 +42,7 @@ class Autotest::Rspec2 < Autotest
 
   def make_test_cmd(files_to_test)
     files_to_test.empty? ? '' :
-      "#{bundle_exec}#{ruby} #{require_rubygems}-S #{SPEC_PROGRAM} --tty #{normalize(files_to_test).keys.flatten.map { |f| "'#{f}'"}.join(' ')}"
-  end
-
-  def bundle_exec
-    using_bundler? ? "bundle exec " : ""
-  end
-
-  def require_rubygems
-    using_bundler? ? "" : defined?(:Gem) ? "-rrubygems " : " "
+      "#{prefix}#{ruby}#{suffix} -S #{SPEC_PROGRAM} --tty #{normalize(files_to_test).keys.flatten.map { |f| "'#{f}'"}.join(' ')}"
   end
 
   def normalize(files_to_test)
@@ -59,8 +52,16 @@ class Autotest::Rspec2 < Autotest
     end
   end
 
+  def suffix
+    using_bundler? ? "" : defined?(:Gem) ? " -rrubygems" : ""
+  end
+
   def using_bundler?
-    File.exists?('./Gemfile')
+    prefix =~ /bundle exec/
+  end
+
+  def gemfile?
+    File.exist?('./Gemfile')
   end
 
 end

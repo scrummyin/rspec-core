@@ -162,6 +162,7 @@ describe RSpec::Core::ConfigurationOptions do
     it "does not send --drb back to the parser after parsing options" do
       config_options_object("--drb", "--color").drb_argv.should_not include("--drb")
     end
+
   end
 
   describe "files_or_directories_to_run" do
@@ -204,6 +205,38 @@ describe RSpec::Core::ConfigurationOptions do
       config_options_object(*%w[--options custom.opts]).drb_argv.should include("--options", "custom.opts")
     end
 
+    context "with tags" do
+      it "includes the tags" do
+        coo = config_options_object("--tag", "tag")
+        coo.drb_argv.should eq(["--tag", "tag"])
+      end
+
+      it "leaves tags intact" do
+        coo = config_options_object("--tag", "tag")
+        coo.drb_argv
+        coo.options[:filter].should eq( {:tag=>true} )
+      end
+    end
+
+    context "with formatters" do
+      it "includes the formatters" do
+        coo = config_options_object("--format", "d")
+        coo.drb_argv.should eq(["--format", "d"])
+      end
+
+      it "leaves formatters intact" do
+        coo = config_options_object("--format", "d")
+        coo.drb_argv
+        coo.options[:formatters].should eq([["d"]])
+      end
+
+      it "leaves output intact" do
+        coo = config_options_object("--format", "p", "--out", "foo.txt", "--format", "d")
+        coo.drb_argv
+        coo.options[:formatters].should eq([["p","foo.txt"],["d"]])
+      end
+    end
+
     context "--drb specified in ARGV" do
       it "renders all the original arguments except --drb" do
         config_options_object(*%w[ --drb --color --format s --line_number 1 --example pattern --profile --backtrace -I path/a -I path/b --require path/c --require path/d]).
@@ -239,7 +272,7 @@ describe RSpec::Core::ConfigurationOptions do
     end
   end
 
-  describe "sources: ~/.rspec, ./.rspec, custom, SPEC_OPTS, and CLI" do
+  describe "sources: ~/.rspec, ./.rspec, custom, CLI, and SPEC_OPTS" do
     let(:local_options_file)  { File.join(Dir.tmpdir, ".rspec-local") }
     let(:global_options_file) { File.join(Dir.tmpdir, ".rspec-global") }
     let(:custom_options_file) { File.join(Dir.tmpdir, "custom.options") }
@@ -280,16 +313,15 @@ describe RSpec::Core::ConfigurationOptions do
       options[:drb].should be_true
     end
 
-    it "prefers CLI over SPEC_OPTS" do
+    it "prefers SPEC_OPTS over CLI" do
       ENV["SPEC_OPTS"] = "--format spec_opts"
-      parse_options("--format", "cli")[:formatters].should eq([['cli']])
+      parse_options("--format", "cli")[:formatters].should eq([['spec_opts']])
     end
 
-    it "prefers SPEC_OPTS over file options" do
+    it "prefers CLI over file options" do
       write_options(:local,  "--format local")
       write_options(:global, "--format global")
-      ENV["SPEC_OPTS"] = "--format spec_opts"
-      parse_options[:formatters].should eq([['spec_opts']])
+      parse_options("--format", "cli")[:formatters].should eq([['cli']])
     end
 
     it "prefers local file options over global" do

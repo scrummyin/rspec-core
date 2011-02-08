@@ -3,9 +3,11 @@ Feature: configure expectation framework
   By default, RSpec is configured to include rspec-expectations for expressing
   desired outcomes. You can also configure RSpec to use:
 
-    rspec/expectations (explicitly)
-    test/unit/assertions
-    rspec/expecations _and_ test/unit assertions
+  * rspec/expectations (explicitly)
+  * stdlib assertions
+    * test/unit assertions in ruby 1.8
+    * minitest assertions in ruby 1.9
+  * rspec/expecations _and_ stlib assertions
 
   Scenario: configure rspec-expectations (explicitly)
     Given a file named "example_spec.rb" with:
@@ -21,8 +23,7 @@ Feature: configure expectation framework
       end
       """
     When I run "rspec example_spec.rb"
-    Then the output should contain "1 example, 0 failures"
-    And the exit status should be 0
+    Then the examples should all pass
 
   Scenario: configure test/unit assertions
     Given a file named "example_spec.rb" with:
@@ -38,8 +39,7 @@ Feature: configure expectation framework
       end
       """
     When I run "rspec example_spec.rb"
-    Then the output should contain "1 example, 0 failures"
-    And the exit status should be 0
+    Then the examples should all pass
 
   Scenario: configure rspec/expecations AND test/unit assertions
     Given a file named "example_spec.rb" with:
@@ -59,5 +59,4 @@ Feature: configure expectation framework
       end
       """
     When I run "rspec example_spec.rb"
-    Then the output should contain "2 examples, 0 failures"
-    And the exit status should be 0
+    Then the examples should all pass

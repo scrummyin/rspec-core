@@ -1,58 +1,16 @@
 # rspec-core-2.3
 
-## autotest integration
-
-Add a .rspec file to the project's root directory to tell RSpec to tell
-Autotest to use RSpec's specialized Autotest class.
-
-NOTE that rspec-core-2.0, 2.1, and 2.2 required an autotest/discover.rb file in
-the project's root directory. This worked with some, but not all versions of
-autotest and/or the autotest command that ships with ZenTest. This new approach
-will work regardless of which version of autotest/ZenTest you are using.
-
-## config.expect_with
+## `config.expect_with`
 
 Use this to configure RSpec to use rspec/expectations (default),
-test/unit/assertions, or both:
+stdlib assertions (Test::Unit with Ruby 1.8, MiniTest with Ruby 1.9),
+or both:
 
     RSpec.configure do |config|
       config.expect_with :rspec          # => rspec/expectations
-      config.expect_with :stdlib         # => test/unit/assertions
+      config.expect_with :stdlib         # => Test::Unit or MinitTest
       config.expect_with :rspec, :stdlib # => both
     end
-
-# rspec-core-2.2
-
-## FASTER!
-
-Made several small optimizations that all add up to a considerable improvement
-in performance. Using a simple benchmark:
-
-    generate 5000 example groups,
-    each with one example,
-    each with one passing expectation
-
-Run using ruby-1.9.2 on Mac OS X w/ 3.06 G
-
-* rspec-2.1
-  * loaded in 0.85 on avg
-  * ran in 2.61 on avg
-* rspec-2.2
-  * loaded in 0.73 on avg (~15% improvement)
-  * ran in 0.94 on avg    (~64% improvement**)
-    
-** this does _not_ mean your suite will be 64% faster, but it does mean that
-   the overhead incurred by RSpec in your suite should be roughly 64% less.
-
-## Command line
-
-### --debug/-d is now deprecated
-
-This command line option is now has no effect (other than a deprecation
-warning). To use the debugger, just add a `debugger` statement anywhere in your
-code. As long as you have ruby-debug installed, it will just work. If you
-don't, then you'll get a friendly warning telling you what's going on, but
-execution will continue.
 
 # rspec-core-2.1
 
@@ -205,9 +163,9 @@ passed to `it_should_behave_like`.
 See [features/example\_groups/shared\_example\_group.feature](http://github.com/rspec/rspec-core/blob/master/features/example_groups/shared_example_group.feature) for more information.
 
 NOTICE: The including example groups no longer have access to any of the
-methods, hooks, or state defined inside a shared group. This will break specs
-that were using shared example groups to extend the behavior of including
-groups in any way besides their intended purpose: to add examples to a group.
+methods, hooks, or state defined inside a shared group. This will break rspec-1
+specs that were using shared example groups to extend the behavior of including
+groups.
 
 # Upgrading from rspec-1.x
 
@@ -278,23 +236,7 @@ A few things changed in the Rake task used to run specs:
 
 ### autotest
 
-RSpec-2 works with autotest as follows:
-
-    rspec --configure autotest
-
-This adds `./autotest/discover.rb` with:
-
-    Autotest.add_discovery { "rspec2" }
-
-Now, on the command line just type:
-
-    autotest
-
-Or, if you're using bundler:
-
-    bundle exec autotest
-
-The `autospec` command is a thing of the past. 
+`autospec` is dead. Long live `autotest`.
 
 ### RSpec is the new Spec
 

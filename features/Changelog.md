@@ -1,4 +1,76 @@
-## rspec-core release history (incomplete)
+### 2.5.1 / 2011-02-06
+
+[full changelog](http://github.com/rspec/rspec-core/compare/v2.5.0...v2.5.1)
+
+NOTE: this release breaks compatibility with rspec/autotest/bundler
+integration, but does so in order to greatly simplify it.
+
+With this release, if you want the generated autotest command to include
+'bundle exec', require Autotest's bundler plugin in a .autotest file in the
+project's root directory or in your home directory:
+
+    require "autotest/bundler"
+
+Now you can just type 'autotest' on the commmand line and it will work as you expect.
+
+If you don't want 'bundle exec', there is nothing you have to do.
+
+### 2.5.0 / 2011-02-05
+
+[full changelog](http://github.com/rspec/rspec-core/compare/v2.4.0...v2.5.0)
+
+* Enhancements
+  * Autotest::Rspec2 parses command line args passed to autotest after '--'
+  * --skip-bundler option for autotest command
+  * Autotest regexp fixes (Jon Rowe)
+  * Add filters to html and textmate formatters (Daniel Quimper)
+  * Explicit passing of block (need for JRuby 1.6) (John Firebaugh)
+
+* Bug fixes
+  * fix dom IDs in HTML formatter (Brian Faherty)
+  * fix bug with --drb + formatters when not running in drb
+  * include --tag options in drb args (monocle)
+  * fix regression so now SPEC_OPTS take precedence over CLI options again
+    (Roman Chernyatchik)
+  * only call its(:attribute) once (failing example from Brian Dunn)
+  * fix bizarre bug where rspec would hang after String.alias :to_int :to_i
+    (Damian Nurzynski)
+
+* Deprecations
+  * implicit inclusion of 'bundle exec' when Gemfile present (use autotest's
+    bundler plugin instead)
+
+### 2.4.0 / 2011-01-02
+
+[full changelog](http://github.com/rspec/rspec-core/compare/v2.3.1...v2.4.0)
+
+* Enhancements
+  * start the debugger on -d so the stack trace is visible when it stops
+    (Clifford Heath)
+  * apply hook filtering to examples as well as groups (Myron Marston)
+  * support multiple formatters, each with their own output
+  * show exception classes in failure messages unless they come from RSpec
+    matchers or message expectations
+  * before(:all) { pending } sets all examples to pending
+
+* Bug fixes
+  * fix bug due to change in behavior of reject in Ruby 1.9.3-dev (Shota Fukumori)
+  * fix bug when running in jruby: be explicit about passing block to super
+    (John Firebaugh)
+  * rake task doesn't choke on paths with quotes (Janmejay Singh)
+  * restore --options option from rspec-1
+  * require 'ostruct' to fix bug with its([key]) (Kim Burgestrand)
+  * --configure option generates .rspec file instead of autotest/discover.rb
+
+### 2.3.1 / 2010-12-16
+
+[full changelog](http://github.com/rspec/rspec-core/compare/v2.3.0...v2.3.1)
+
+* Bug fixes
+  * send debugger warning message to $stdout if RSpec.configuration.error_stream
+    has not been defined yet. 
+  * HTML Formatter _finally_ properly displays nested groups (Jarmo Pertman)
+  * eliminate some warnings when running RSpec's own suite (Jarmo Pertman)
 
 ### 2.3.0 / 2010-12-12
 
@@ -44,7 +116,7 @@
   * debugger statements _just work_ as long as ruby-debug is installed
     * otherwise you get warned, but not fired
   * Expose example.metadata in around hooks
-  * Performance improvments (see [Upgrade.markdown](https://github.com/rspec/rspec-core/blob/master/Upgrade.markdown))
+  * Performance improvments (much faster now)
 
 * Bug fixes
   * Make sure --fail-fast makes it across drb

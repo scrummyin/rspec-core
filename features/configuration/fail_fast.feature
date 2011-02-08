@@ -1,8 +1,8 @@
 Feature: fail fast
 
-  Use the fail_fast option to tell RSpec to abort the run on first failure.
+  Use the fail_fast option to tell RSpec to abort the run on first failure:
 
-    RSpec.configure {|c| c.fail_fast = true}
+      RSpec.configure {|c| c.fail_fast = true}
 
   Background:
     Given a file named "spec/spec_helper.rb" with:
@@ -22,7 +22,7 @@ Feature: fail fast
       end
       """
     When I run "rspec spec/example_spec.rb"
-    Then the output should contain "2 examples, 0 failures"
+    Then the examples should all pass
 
   Scenario: fail_fast with first example failing (only runs the one example)
     Given a file named "spec/example_spec.rb" with:
